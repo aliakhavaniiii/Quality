@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Quality Control Management</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--tx:#1b2430;--mu:#6b7785;--pr:#0f766e;--pl:#d9f2ee;--bd:#e3e8ee;--wr:#b45309;--wl:#fdf0dc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10161c;--card:#1a232c;--tx:#e8edf2;--mu:#93a1b0;--pr:#2dd4bf;--pl:#12332f;--bd:#2a3642;--wr:#fbbf24;--wl:#3a2d0f}}
+:root[data-theme="dark"]{--bg:#10161c;--card:#1a232c;--tx:#e8edf2;--mu:#93a1b0;--pr:#2dd4bf;--pl:#12332f;--bd:#2a3642;--wr:#fbbf24;--wl:#3a2d0f}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:Tahoma,"Vazirmatn",system-ui,sans-serif;display:flex;flex-direction:column;font-size:15px}
+header{padding:14px 16px;background:var(--pr);color:#fff;font-weight:bold;font-size:17px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header{color:#06201d}}
+main{flex:1;overflow-y:auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{margin:0 0 10px;font-size:16px}
+.mu{color:var(--mu);font-size:13px}
+.big{font-size:26px;font-weight:bold;color:var(--pr)}
+.warn{background:var(--wl);border-color:var(--wr);color:var(--wr)}
+.row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.row:last-child{border:0}
+.row .g{flex:1}
+input[type=text],input[type=number]{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:9px;font:inherit;width:100%}
+input.h{width:80px;text-align:center}
+button{background:var(--pr);color:#fff;border:0;border-radius:10px;padding:9px 14px;font:inherit;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button{color:#06201d}}
+button.x{background:transparent;color:var(--mu);padding:4px 8px}
+.add{display:flex;gap:8px;margin-top:10px}
+.tot{background:var(--pl);border-radius:10px;padding:10px;text-align:center;margin-bottom:10px}
+.today{background:var(--pl);margin:0 -6px;padding:8px 6px;border-radius:8px}
+.fri{color:#dc2626}
+nav{display:flex;overflow-x:auto;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px);flex-shrink:0}
+nav button{background:transparent;color:var(--mu);border-radius:0;flex:0 0 auto;min-width:84px;padding:9px 6px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px;border-top:3px solid transparent}
+nav button span{font-size:20px}
+nav button.on{color:var(--pr);border-top-color:var(--pr);font-weight:bold}
+.mon{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chip{padding:10px;border-radius:10px;border:1px solid var(--bd);text-align:center}
+.chip.on{background:var(--pl);border-color:var(--pr);font-weight:bold}
+input[type=checkbox]{width:24px;height:24px;accent-color:var(--pr);flex-shrink:0}
+.nv{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+</style>
+</head>
+<body>
+<header id="ttl">خانه</header>
+<main id="main"></main>
+<nav id="nav"></nav>
+<script>
+const MN=["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
+const WD=["شنبه","یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه","جمعه"];
+const fa=n=>String(n).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]);
+function g2j(gy,gm,gd){const t=[0,31,59,90,120,151,181,212,243,273,304,334];let jy=gy<=1600?0:979;gy-=gy<=1600?621:1600;const g2=gm>2?gy+1:gy;let d=365*gy+Math.floor((g2+3)/4)-Math.floor((g2+99)/100)+Math.floor((g2+399)/400)-80+gd+t[gm-1];jy+=33*Math.floor(d/12053);d%=12053;jy+=4*Math.floor(d/1461);d%=1461;if(d>365){jy+=Math.floor((d-1)/365);d=(d-1)%365}const jm=d<186?1+Math.floor(d/31):7+Math.floor((d-186)/30);const jd=1+(d<186?d%31:(d-186)%30);return[jy,jm,jd]}
+function j2g(jy,jm,jd){jy+=1595;let d=-355668+365*jy+Math.floor(jy/33)*8+Math.floor((jy%33+3)/4)+jd+(jm<7?(jm-1)*31:(jm-7)*30+186);let gy=400*Math.floor(d/146097);d%=146097;if(d>36524){gy+=100*Math.floor(--d/36524);d%=36524;if(d>=365)d++}gy+=4*Math.floor(d/1461);d%=1461;if(d>365){gy+=Math.floor((d-1)/365);d=(d-1)%365}let gd=d+1;const s=[0,31,(gy%4==0&&gy%100!=0)||gy%400==0?29:28,31,30,31,30,31,31,30,31,30,31];let gm;for(gm=0;gm<13&&gd>s[gm];gm++)gd-=s[gm];return[gy,gm,gd]}
+function mlen(y,m){if(m<7)return 31;if(m<12)return 30;return g2j(...j2g(y,12,30))[1]===12?30:29}
+function wday(y,m,d){const g=j2g(y,m,d);return(new Date(g[0],g[1]-1,g[2]).getDay()+1)%7}
+const now=new Date();const T=g2j(now.getFullYear(),now.getMonth()+1,now.getDate());
+let S={daily:{lab:[],line:[],ctrl:[]},items:null,chk:{},ot:{},loans:[],clean:{}};
+const DEF=[["a1","نمونه آزمایشگاه","n"],["a2","مجوز شروع خط","n"],["a3","نمونه‌های شاهد","n"],["a4","نظافت روزانه","d"],["a5","گزارش هفتگی","w"],["a6","تمیز کردن میز","d"],["a7","ثبت روزانه امورات سالن","d"]];
+try{const r=localStorage.getItem("app1");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+if(!S.items){S.items=DEF.map(([id,t,ty])=>({id,t,ty}));["lab","line","ctrl"].forEach(k=>((S.daily&&S.daily[k])||[]).forEach(it=>S.items.push({id:"c"+Math.random().toString(36).slice(2),t:it.t,ty:"n"})))}
+function stamp(ty){if(ty==="d")return T.join("-");if(ty==="w"){const g=j2g(...T);return new Date(g[0],g[1]-1,g[2]-wday(...T)).toDateString()}return"x"}
+const isDone=it=>S.chk[it.id]===stamp(it.ty);
+const pend=()=>S.items.filter(it=>!isDone(it)).length;
+const save=()=>{try{localStorage.setItem("app1",JSON.stringify(S))}catch(e){}try{Android.setLoans(JSON.stringify(S.loans))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tabs=[["home","🏠","خانه"],["daily","📋","امورات روزمره"],["cal","📅","تاریخ شمسی"],["ot","⏱️","اضافه‌کاری"],["loan","💳","اقساط وام"],["ctrl","🧪","نمونه شاهد"],["clean","🧹","نظافت"]];
+let cur="home",vy=T[0],vm=T[1];
+function days2(d){return d} 
+function daysToEnd(){return mlen(T[0],T[1])-T[2]}
+function loanLeft(day){const L=mlen(T[0],T[1]);const dd=Math.min(day,L);if(dd>=T[2])return dd-T[2];const L2=mlen(...(T[1]==12?[T[0]+1,1]:[T[0],T[1]+1]));return L-T[2]+Math.min(day,L2)}
+const CLM=[3,6,9,12];
+function cleanInfo(){let y=T[0],m=T[1];for(let i=0;i<13;i++){if(CLM.includes(m)&&(m>T[1]||y>T[0]||m===T[1]))return[y,m];m++;if(m>12){m=1;y++}}}
+function view(){
+const m=document.getElementById("main");let h="";
+if(cur==="home"){
+const[cy,cm]=cleanInfo();const le=daysToEnd();
+h+=`<div class="card"><div class="mu">${WD[wday(...T)]}</div><div class="big">${fa(T[2])} ${MN[T[1]-1]} ${fa(T[0])}</div></div>`;
+h+=`<div class="card ${pend()?"warn":""}" onclick="go('daily')"><h2>📋 امورات روزمره</h2>${pend()?fa(pend())+" مورد هنوز تیک نخورده":"همه‌چیز انجام شده ✅"}</div>`;
+h+=`<div class="card ${le<=3?"warn":""}"><h2>🧪 نمونه‌های شاهد</h2>${le===0?"امروز آخر ماه است؛ نمونه‌های شاهد را بردارید!":fa(le)+" روز تا آخر ماه"}</div>`;
+if(!S.loans.length)h+=`<div class="card"><h2>💳 اقساط وام</h2><span class="mu">قسطی ثبت نشده</span></div>`;
+S.loans.forEach(l=>{const r=loanLeft(l.day);h+=`<div class="card ${r<=3?"warn":""}"><h2>💳 ${esc(l.name)}</h2>${r===0?"امروز سررسید است":fa(r)+" روز تا سررسید"} <span class="mu">(روز ${fa(l.day)} هر ماه)</span></div>`});
+h+=`<div class="card"><h2>🧹 نظافت بعدی</h2>${MN[cm-1]} ${fa(cy)} ${cm===6||cm===12?"(نظافت سه‌ماهه و شش‌ماهه)":"(نظافت سه‌ماهه)"}</div>`;
+}
+if(cur==="daily"){
+const dn=S.items.length-pend();
+h+=`<div class="tot">انجام‌شده: <b>${fa(dn)}</b> از ${fa(S.items.length)}</div><div class="card">`;
+S.items.forEach(it=>{const d=isDone(it);h+=`<div class="row"><input type="checkbox" ${d?"checked":""} onchange="tg('${it.id}')"><span class="g" style="${d?"text-decoration:line-through;color:var(--mu)":""}">${esc(it.t)}</span><span class="mu">${it.ty==="d"?"روزانه":it.ty==="w"?"هفتگی":""}</span>${it.id[0]==="c"?`<button class="x" onclick="rm('${it.id}')">✕</button>`:""}</div>`});
+h+=`<div class="add"><input type="text" id="in_new" placeholder="مورد جدید..."><button onclick="ad()">افزودن</button></div></div><div class="mu">تیک موارد روزانه هر روز و گزارش هفتگی هر شنبه خودکار پاک می‌شود.</div>`;
+}
+if(false){
+[["lab","نمونه آزمایشگاه"],["line","مجوز شروع خط"],["ctrl","نمونه‌های شاهد"]].forEach(([k,t])=>{
+h+=`<div class="card"><h2>${t}</h2>`;
+S.daily[k].forEach((it,i)=>{h+=`<div class="row"><input type="checkbox" ${it.d?"checked":""} onchange="tg('${k}',${i})"><span class="g" style="${it.d?"text-decoration:line-through;color:var(--mu)":""}">${esc(it.t)}</span><button class="x" onclick="rm('${k}',${i})">✕</button></div>`});
+if(!S.daily[k].length)h+=`<span class="mu">موردی ثبت نشده</span>`;
+h+=`<div class="add"><input type="text" id="in_${k}" placeholder="مورد جدید..."><button onclick="ad('${k}')">افزودن</button></div></div>`});
+}
+if(cur==="cal"){
+const L=mlen(vy,vm),st=wday(vy,vm,1);
+h+=`<div class="card"><div class="nv"><button onclick="mv(-1)">›</button><b>${MN[vm-1]} ${fa(vy)}</b><button onclick="mv(1)">‹</button></div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center">`;
+WD.forEach(w=>h+=`<div class="mu" style="font-size:11px">${w.slice(0,1)}</div>`);
+for(let i=0;i<st;i++)h+="<div></div>";
+for(let d=1;d<=L;d++){const ist=vy===T[0]&&vm===T[1]&&d===T[2];const f=(st+d-1)%7===6;h+=`<div class="${ist?"chip on":""} ${f?"fri":""}" style="padding:8px 0;border-radius:8px;${ist?"":"border:0"}">${fa(d)}</div>`}
+h+=`</div></div><div class="card"><h2>تبدیل به میلادی</h2>`;const g=j2g(vy,vm,1);h+=`<span class="mu">اول ${MN[vm-1]} برابر است با ${g[0]}/${g[1]}/${g[2]}</span></div>`;
+}
+if(cur==="ot"){
+const L=mlen(vy,vm);let tot=0;for(let d=1;d<=L;d++){tot+=parseFloat(S.ot[`${vy}-${vm}-${d}`])||0}
+h+=`<div class="nv"><button onclick="mv(-1)">›</button><b>${MN[vm-1]} ${fa(vy)}</b><button onclick="mv(1)">‹</button></div><div class="tot">جمع اضافه‌کاری: <b>${fa(tot)}</b> ساعت</div><div class="card">`;
+for(let d=1;d<=L;d++){const k=`${vy}-${vm}-${d}`;const ist=vy===T[0]&&vm===T[1]&&d===T[2];const f=wday(vy,vm,d)===6;
+h+=`<div class="row ${ist?"today":""}"><span class="g ${f?"fri":""}">${WD[wday(vy,vm,d)]} ${fa(d)} ${MN[vm-1]}</span><input class="h" type="number" step="0.25" min="0" inputmode="decimal" placeholder="ساعت" value="${S.ot[k]??""}" onchange="otv('${k}',this.value)"></div>`}
+h+=`</div>`;
+}
+if(cur==="loan"){
+h+=`<div class="card"><h2>افزودن قسط</h2><input type="text" id="ln" placeholder="نام وام (مثلاً وام بانک ملی)"><div class="add"><input type="number" id="ld" min="1" max="31" inputmode="numeric" placeholder="روز سررسید هر ماه"><input type="number" id="la" inputmode="numeric" placeholder="مبلغ (تومان)"></div><div class="add"><button onclick="al()" style="width:100%">ثبت قسط</button></div></div>`;
+S.loans.forEach((l,i)=>{const r=loanLeft(l.day);h+=`<div class="card ${r<=3?"warn":""}"><div class="row" style="border:0;padding:0"><div class="g"><b>${esc(l.name)}</b><div class="mu">روز ${fa(l.day)} هر ماه${l.amt?" · "+fa(Number(l.amt).toLocaleString("en"))+" تومان":""}</div></div><div>${r===0?"امروز":fa(r)+" روز"}</div><button class="x" onclick="dl(${i})">✕</button></div></div>`});
+}
+if(cur==="ctrl"){
+const le=daysToEnd();
+h+=`<div class="card ${le<=3?"warn":""}"><h2>یادآور نمونه‌های شاهد</h2><div class="big">${fa(le)} روز</div><div class="mu">تا آخر ${MN[T[1]-1]} (${fa(mlen(T[0],T[1]))} ${MN[T[1]-1]})</div></div><div class="card"><span class="mu">این یادآور هر ماه در روز آخر ماه شمسی فعال می‌شود. سه روز مانده به آخر ماه، رنگ کارت در صفحهٔ خانه هشدار می‌دهد.</span></div>`;
+}
+if(cur==="clean"){
+h+=`<div class="card"><h2>نظافت ${fa(T[0])}</h2><div class="mu" style="margin-bottom:10px">خرداد، شهریور، آذر، اسفند · در شهریور و اسفند نظافت شش‌ماهه هم هست</div><div class="mon">`;
+CLM.forEach(m=>{const k=T[0]+"-"+m;const dn=S.clean[k];const six=m===6||m===12;h+=`<div class="chip ${dn?"on":""}" onclick="cl('${k}')">${dn?"✅":"⬜"} ${MN[m-1]}<div class="mu">${six?"سه‌ماهه + شش‌ماهه":"سه‌ماهه"}</div></div>`});
+h+=`</div></div>`;
+}
+m.innerHTML=h;
+document.getElementById("ttl").textContent=tabs.find(t=>t[0]===cur)[2]==="خانه"?"خانه":tabs.find(t=>t[0]===cur)[2];
+document.getElementById("nav").innerHTML=tabs.map(t=>`<button class="${t[0]===cur?"on":""}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join("");
+}
+function go(t){cur=t;view();document.getElementById("main").scrollTop=0}
+function mv(n){vm+=n;if(vm>12){vm=1;vy++}if(vm<1){vm=12;vy--}view()}
+function ad(){const v=document.getElementById("in_new").value.trim();if(!v)return;S.items.push({id:"c"+Math.random().toString(36).slice(2),t:v,ty:"n"});save();view()}
+function tg(id){const it=S.items.find(x=>x.id===id);if(isDone(it))delete S.chk[id];else S.chk[id]=stamp(it.ty);save();view()}
+function rm(id){S.items=S.items.filter(x=>x.id!==id);save();view()}
+function otv(k,v){if(v==="")delete S.ot[k];else S.ot[k]=v;save();view()}
+function al(){const n=document.getElementById("ln").value.trim(),d=parseInt(document.getElementById("ld").value),a=document.getElementById("la").value;if(!n||!(d>=1&&d<=31))return;S.loans.push({name:n,day:d,amt:a});save();view()}
+function dl(i){S.loans.splice(i,1);save();view()}
+function cl(k){S.clean[k]=!S.clean[k];save();view()}
+save();view();
+</script>
+</body>
+</html>
